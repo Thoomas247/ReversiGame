@@ -21,9 +21,15 @@
     <ClCompile Include="GameOptions.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameState.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameOptions.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

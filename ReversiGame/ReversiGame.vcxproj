@@ -81,10 +81,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="GameOptions.c" />
+    <ClCompile Include="GameState.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameOptions.h" />
+    <ClInclude Include="GameState.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

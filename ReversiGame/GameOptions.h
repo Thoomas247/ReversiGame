@@ -6,6 +6,8 @@
 
 #define MAX_FILE_NAME_SIZE 64
 
+#define BOARD_WIDTH 8
+
 #define WHITE_PIECE 'O'
 #define BLACK_PIECE 'X'
 
