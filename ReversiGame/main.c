@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 			BOOL validMove = FALSE;
 			while (!validMove)
 			{
-				if (scanf("%d %d", &coords.y, &coords.y) == 2 && GameBoard_isValidMove(coords))
+				if (scanf("%d %d", &coords.y, &coords.x) == 2 && GameBoard_isValidMove(coords))
 				{
 					validMove = TRUE;
 				}
