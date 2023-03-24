@@ -9,6 +9,7 @@
 
 /*
 * Accessible globally via GameOptions_get().
+* We want write access to this variable to be restricted to GameOptions.c, so we declare it static.
 */
 static GameOptions s_GameOptions;
 

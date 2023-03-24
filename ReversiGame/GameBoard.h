@@ -1,12 +1,7 @@
 #pragma once
 
 #include "GameOptions.h"
-
-typedef struct MoveCoords
-{
-	int x;
-	int y;
-} MoveCoords;
+#include "Vec2.h"
 
 /*
 * Creates the initial game board.
@@ -20,14 +15,15 @@ void GameBoard_print();
 
 /*
 * Returns whether the given move is a valid move.
+* Calls GameBoard_calculateValidMoves() if it has not been called since last move.
 */
-BOOL GameBoard_isValidMove(MoveCoords coords);
+BOOL GameBoard_isValidMove(Vec2 coords);
 
 /*
 * Applies the given move to the board.
 * Does not check for validity (call GameBoard_isValidMove() first)
 */
-void GameBoard_playMove(MoveCoords coords);
+void GameBoard_playMove(Vec2 coords);
 
 /*
 * Saves the current board.

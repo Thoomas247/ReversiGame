@@ -4,10 +4,11 @@
 #include <stdio.h>
 #include <string.h>
 
+/* we want access to this variable to be restricted to GameState.c, so we declare it static */
 static GameState* s_pCurrentGameState = NULL;
 
 /*
-* Helper function used by freeGameStates() to recursively free game states.
+* Helper function used by GameState_freeAll() to recursively free game states.
 */
 static void freeGameStatesRecursive(GameState* pState)
 {

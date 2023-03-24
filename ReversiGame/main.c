@@ -4,41 +4,52 @@
 #include "GameState.h"
 #include "GameBoard.h"
 
+void handlePlayerMove()
+{
+	Vec2 coords;
+	BOOL validMove = FALSE;
+	while (!validMove)
+	{
+		/* get player input */
+		printf("Jogador H (%c) (linha e coluna) = ", GameBoard_getTurn());
+
+		/* check for valid input and move */
+		if (scanf("%d %d", &coords.y, &coords.x) == 2 && GameBoard_isValidMove(coords))
+			validMove = TRUE;
+
+		else
+			printf("\nMovimento invalido, tente novamente...\n");
+
+		/* if too many characters are written, scanf will not clear the input buffer properly, so we do it manually */
+		while (getchar() != '\n');
+	}
+
+	GameBoard_playMove(coords);
+}
+
+void handleComputerMove()
+{
+	printf("Jogador IA (%c) esta a jogar\n", GameBoard_getTurn());
+}
+
 int main(int argc, char* argv[])
 {
 	GameOptions_parse(argc, argv);
-	GameOptions_print();
+	//GameOptions_print();
 
 	GameBoard_create();
 
-	MoveCoords coords;
 	while (TRUE)
 	{
 		GameBoard_print();
 
 		if (GameBoard_getTurn() == GameOptions_get()->playerPiece)
 		{
-			printf("Jogador H (%c) (linha e coluna) = ", GameBoard_getTurn());
-
-			/* get player input */
-			BOOL validMove = FALSE;
-			while (!validMove)
-			{
-				if (scanf("%d %d", &coords.y, &coords.x) == 2 && GameBoard_isValidMove(coords))
-				{
-					validMove = TRUE;
-				}
-				else
-				{
-					printf("\nPor favor entra dois numeros entre 0 e %d", BOARD_WIDTH - 1);
-				}
-			}
-
-			GameBoard_playMove(coords);
+			handlePlayerMove();
 		}
 		else
 		{
-			printf("Jogador IA (%c) esta a jogar\n", GameBoard_getTurn());
+			handleComputerMove();
 		}
 
 		printf("\n");
@@ -46,8 +57,8 @@ int main(int argc, char* argv[])
 		GameBoard_swapTurn();
 	}
 
-	GameBoard_save();
-	GameBoard_undo();
+	//GameBoard_save();
+	//GameBoard_undo();
 	GameState_freeAll();
 
 	return 0;
