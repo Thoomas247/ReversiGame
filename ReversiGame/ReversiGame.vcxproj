@@ -84,6 +84,7 @@
     <ClCompile Include="GameOptions.c" />
     <ClCompile Include="GameState.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="Vec2.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameBoard.h" />

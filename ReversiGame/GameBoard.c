@@ -44,6 +44,15 @@ static BOOL isInBounds(Vec2 coords)
 }
 
 /*
+* Helper function to calculate how many captures would occur from playing this move.
+* Used by calculateValidMoves();
+*/
+static int calculateCaptureStrength(Vec2 coord)
+{
+
+}
+
+/*
 * Helper function used by GameBoard_isValidMove() to retrieve all valid moves.
 */
 static void calculateValidMoves()
@@ -51,7 +60,6 @@ static void calculateValidMoves()
 	/* directions in clockwise order, starting from up */
 	static const Vec2 directions[8] = { {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1} };
 
-	/* find opponent's pieces */
 	char opponentPiece;
 	if (s_CurrentTurn == WHITE_PIECE)
 		opponentPiece = BLACK_PIECE;
@@ -60,19 +68,25 @@ static void calculateValidMoves()
 
 	Vec2 coord;
 	Vec2 adjacentCoord;
+	ValidMove validMove;
 	int i;
 	for (coord.x = 0; coord.x < BOARD_WIDTH; coord.x++)
 	{
 		for (coord.y = 0; coord.y < BOARD_WIDTH; coord.y++)
 		{
-			for (i = 0; i < 8; i++)
+			/* if an opponent's piece is found, check for empty squares around it */
+			if (s_Board[coord.x][coord.y] == opponentPiece)
 			{
-				if (s_Board[coord.x][coord.y] == opponentPiece)
+				for (i = 0; i < 8; i++)
 				{
 					adjacentCoord = Vec2_add(coord, directions[i]);
-					if (isInBounds(adjacentCoord) && s_Board[coord.x][coord.y] == EMPTY_MARKER)
-					{
 
+					/* if the adjacent square is in bounds and empty, check if move would result in captures */
+					if (isInBounds(adjacentCoord) && s_Board[adjacentCoord.x][adjacentCoord.y] == EMPTY_MARKER)
+					{
+						validMove.coord = adjacentCoord;
+						s_ValidMoves.moves[s_ValidMoves.count] = validMove;
+						s_ValidMoves.count++;
 					}
 				}
 			}
@@ -156,6 +170,8 @@ BOOL GameBoard_isValidMove(Vec2 coords)
 void GameBoard_playMove(Vec2 coords)
 {
 	s_Board[coords.x][coords.y] = s_CurrentTurn;
+
+	// TODO: capture pieces
 
 	/* now that move has been played, valid moves will need to be recalculated */
 	s_ValidMoves.count = 0;

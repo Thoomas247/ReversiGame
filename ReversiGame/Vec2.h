@@ -8,13 +8,13 @@ typedef struct Vec2
 	int y;
 } Vec2;
 
-Vec2 Vec2_add(Vec2 a, Vec2 b)
-{
-	Vec2 vec = { a.x + b.x, a.y + b.y };
-	return vec;
-}
+/*
+* Returns the sum of a and b.
+* Adds the two Vec2s component-wise.
+*/
+Vec2 Vec2_add(Vec2 a, Vec2 b);
 
-BOOL Vec2_equal(Vec2 a, Vec2 b)
-{
-	return (a.x == b.x && a.y == b.y);
-}
+/*
+* Returns true if a and b are equal, false otherwise.
+*/
+BOOL Vec2_equal(Vec2 a, Vec2 b);

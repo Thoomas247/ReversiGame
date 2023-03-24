@@ -27,6 +27,9 @@
     <ClCompile Include="GameBoard.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Vec2.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameOptions.h">
