@@ -80,11 +80,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameBoard.c" />
     <ClCompile Include="GameOptions.c" />
     <ClCompile Include="GameState.c" />
     <ClCompile Include="main.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GameBoard.h" />
     <ClInclude Include="GameOptions.h" />
     <ClInclude Include="GameState.h" />
   </ItemGroup>

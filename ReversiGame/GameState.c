@@ -9,26 +9,26 @@ static GameState* s_pCurrentGameState = NULL;
 /*
 * Helper function used by freeGameStates() to recursively free game states.
 */
-static void freeGameStatesRecursive(GameState* state)
+static void freeGameStatesRecursive(GameState* pState)
 {
-	if (!state)
+	if (!pState)
 		return;
 
 	/* free all previous states first */
-	freeGameStatesRecursive(state->pLastState);
+	freeGameStatesRecursive(pState->pLastState);
 
-	free(state);
+	free(pState);
 }
 
 /*
 * Helper function used to copy game boards.
 */
-static void copyBoard(char* dst, const char* src)
+static void copyBoard(char* pDst, const char* pSrc)
 {
-	memcpy(dst, src, sizeof(char) * BOARD_WIDTH * BOARD_WIDTH);
+	memcpy(pDst, pSrc, sizeof(char) * BOARD_WIDTH * BOARD_WIDTH);
 }
 
-void saveGameState(char turn, const char* pBoard)
+void GameState_save(char turn, const char* pBoard)
 {
 	/* early return if board is NULL */
 	if (!pBoard)
@@ -54,12 +54,12 @@ void saveGameState(char turn, const char* pBoard)
 	}
 }
 
-void freeGameStates()
+void GameState_freeAll()
 {
 	freeGameStatesRecursive(s_pCurrentGameState);
 }
 
-void loadLastGameState(char* pTurn, char* pBoard)
+void GameState_loadPrevious(char* pTurn, char* pBoard)
 {
 	GameState* pLastState = s_pCurrentGameState->pLastState;
 

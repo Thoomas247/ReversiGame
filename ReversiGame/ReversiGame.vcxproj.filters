@@ -24,12 +24,18 @@
     <ClCompile Include="GameState.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="GameBoard.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameOptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="GameState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="GameBoard.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

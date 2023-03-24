@@ -22,15 +22,15 @@ typedef struct GameOptions
 /*
 * Initializes the game options given the command line arguments.
 */
-void parseGameOptions(int argc, char* argv[]);
+void GameOptions_parse(int argc, char* argv[]);
 
 /*
 * Prints the current game options to the output window.
 * Used for debugging.
 */
-void printGameOptions();
+void GameOptions_print();
 
 /*
 * Provides read-only access to the GameOptions instance.
 */
-const GameOptions* getGameOptions();
+const GameOptions* GameOptions_get();

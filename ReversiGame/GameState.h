@@ -13,15 +13,15 @@ typedef struct GameState
 * Saves the current board state.
 * Used by undo functionality.
 */
-void saveGameState(char turn, const char* board);
+void GameState_save(char turn, const char* pBoard);
 
 /*
 * Deletes all saved game states.
 */
-void freeGameStates();
+void GameState_freeAll();
 
 /*
 * Loads the previous game state and deletes the current one.
 * Used by undo functionality.
 */
-void loadLastGameState(char* turn, char* board);
+void GameState_loadPrevious(char* turn, char* pBoard);

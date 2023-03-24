@@ -8,11 +8,11 @@
 #define PIECE_ARG 'p'
 
 /*
-* Accessible globally via getGameOptions().
+* Accessible globally via GameOptions_get().
 */
 static GameOptions s_GameOptions;
 
-void parseGameOptions(int argc, char* argv[])
+void GameOptions_parse(int argc, char* argv[])
 {
 	/* reset game options */
 	s_GameOptions.saveFileName[0] = '\0';
@@ -59,14 +59,14 @@ void parseGameOptions(int argc, char* argv[])
 	}
 }
 
-void printGameOptions()
+void GameOptions_print()
 {
 	printf("Save File: %s\n", s_GameOptions.saveFileName);
 	printf("Allow Undo: %d\n", s_GameOptions.allowUndo);
 	printf("Player Piece: %c\n", s_GameOptions.playerPiece);
 }
 
-const GameOptions* getGameOptions()
+const GameOptions* GameOptions_get()
 {
 	return &s_GameOptions;
 }
