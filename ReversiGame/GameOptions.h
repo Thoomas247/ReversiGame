@@ -10,6 +10,7 @@
 
 #define WHITE_PIECE 'O'
 #define BLACK_PIECE 'X'
+#define EMPTY_MARKER '.'
 
 typedef struct GameOptions
 {
