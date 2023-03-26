@@ -7,6 +7,10 @@
 
 #define MAX_VALID_MOVES BOARD_WIDTH * BOARD_WIDTH
 
+#define BIT(n) 1 << n
+
+typedef unsigned int DirectionField;
+
 /*
 * Struct representing a single valid move and the number of points it would give.
 * Only visible within GameBoard.c.
@@ -14,7 +18,8 @@
 typedef struct ValidMove
 {
 	Vec2 coord;
-	int points;
+	int strength;
+	DirectionField directions;
 } ValidMove;
 
 /*
@@ -32,6 +37,9 @@ static char s_Board[BOARD_WIDTH][BOARD_WIDTH];
 static char s_CurrentTurn;
 static ValidMoveList s_ValidMoves;
 
+/* directions in clockwise order, starting from up */
+const Vec2 DIRECTIONS[8] = { {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1} };
+
 /*
 * Helper function to check whether a coordinate is within the board.
 */
@@ -44,52 +52,55 @@ static BOOL isInBounds(Vec2 coords)
 }
 
 /*
-* Helper function to calculate how many captures would occur from playing this move.
-* Used by calculateValidMoves();
+* Helper function to get the currently-not-playing player's piece.
 */
-static int calculateCaptureStrength(Vec2 coord)
+static char getOpponentPiece()
 {
-
+	if (s_CurrentTurn == WHITE_PIECE)
+		return BLACK_PIECE;
+	else
+		return WHITE_PIECE;
 }
 
 /*
-* Helper function used by GameBoard_isValidMove() to retrieve all valid moves.
+* Helper function to calculate how many captures would occur from playing this move.
+* Used by GameBoard_calculateValidMoves().
 */
-static void calculateValidMoves()
+static void calculateCaptureStrength(ValidMove* pValidMove)
 {
-	/* directions in clockwise order, starting from up */
-	static const Vec2 directions[8] = { {0, -1}, {1, -1}, {1, 0}, {1, 1}, {0, 1}, {-1, 1}, {-1, 0}, {-1, -1} };
+	const char opponentPiece = getOpponentPiece();
 
-	char opponentPiece;
-	if (s_CurrentTurn == WHITE_PIECE)
-		opponentPiece = BLACK_PIECE;
-	else
-		opponentPiece = WHITE_PIECE;
+	pValidMove->strength = 0;
+	pValidMove->directions = 0;
 
-	Vec2 coord;
+	int currentStrength;
 	Vec2 adjacentCoord;
-	ValidMove validMove;
-	int i;
-	for (coord.x = 0; coord.x < BOARD_WIDTH; coord.x++)
-	{
-		for (coord.y = 0; coord.y < BOARD_WIDTH; coord.y++)
-		{
-			/* if an opponent's piece is found, check for empty squares around it */
-			if (s_Board[coord.x][coord.y] == opponentPiece)
-			{
-				for (i = 0; i < 8; i++)
-				{
-					adjacentCoord = Vec2_add(coord, directions[i]);
+	char currentPiece;
 
-					/* if the adjacent square is in bounds and empty, check if move would result in captures */
-					if (isInBounds(adjacentCoord) && s_Board[adjacentCoord.x][adjacentCoord.y] == EMPTY_MARKER)
-					{
-						validMove.coord = adjacentCoord;
-						s_ValidMoves.moves[s_ValidMoves.count] = validMove;
-						s_ValidMoves.count++;
-					}
-				}
-			}
+	/* check every direction for opposing pieces */
+	int i;
+	for (i = 0; i < 8; i++)
+	{
+		currentStrength = 0;
+		adjacentCoord = pValidMove->coord;
+		currentPiece = opponentPiece;
+
+		/* continue in this direction to find how many points it would earn */
+		while (isInBounds(adjacentCoord) && currentPiece != s_CurrentTurn && currentPiece != EMPTY_MARKER)
+		{
+			adjacentCoord = Vec2_add(adjacentCoord, DIRECTIONS[i]);
+
+			currentPiece = s_Board[adjacentCoord.x][adjacentCoord.y];
+
+			if (currentPiece == opponentPiece)
+				currentStrength++;
+		}
+
+		/* if the line ends in one of the current player's pieces, the move is valid */
+		if (currentPiece == s_CurrentTurn && currentStrength > 0)
+		{
+			pValidMove->strength += currentStrength;
+			pValidMove->directions |= BIT(i);	/* mark this direction as valid */
 		}
 	}
 }
@@ -118,12 +129,22 @@ void GameBoard_create()
 	s_CurrentTurn = WHITE_PIECE;
 }
 
-void GameBoard_print()
+void GameBoard_print(BOOL showValidMoves)
 {
+	int i;
+
+	if (showValidMoves)
+	{
+		for (i = 0; i < s_ValidMoves.count; i++)
+		{
+			s_Board[s_ValidMoves.moves[i].coord.x][s_ValidMoves.moves[i].coord.y] = VALID_MARKER;
+		}
+	}
+
 	/* print column numbers */
 	printf("  ");
 
-	int i;
+	//int i;
 	for (i = 0; i < BOARD_WIDTH; i++)
 	{
 		printf(" %d", i);
@@ -142,6 +163,71 @@ void GameBoard_print()
 		}
 		printf("\n");
 	}
+
+	if (showValidMoves)
+	{
+		for (i = 0; i < s_ValidMoves.count; i++)
+		{
+			s_Board[s_ValidMoves.moves[i].coord.x][s_ValidMoves.moves[i].coord.y] = EMPTY_MARKER;
+		}
+	}
+}
+
+void GameBoard_calculateValidMoves()
+{
+	const char opponentPiece = getOpponentPiece();
+
+	s_ValidMoves.count = 0;
+
+	Vec2 coord;
+	ValidMove validMove;
+
+	int i;
+	for (coord.x = 0; coord.x < BOARD_WIDTH; coord.x++)
+	{
+		for (coord.y = 0; coord.y < BOARD_WIDTH; coord.y++)
+		{
+			/* if an opponent's piece is found, check for empty squares around it */
+			if (s_Board[coord.x][coord.y] == opponentPiece)
+			{
+				for (i = 0; i < 8; i++)
+				{
+					validMove.coord = Vec2_add(coord, DIRECTIONS[i]);
+
+					/* if the adjacent square is in bounds and empty, check if move would result in captures */
+					if (isInBounds(validMove.coord) && s_Board[validMove.coord.x][validMove.coord.y] == EMPTY_MARKER)
+					{
+						// TODO: check if move has already been calculated
+
+						calculateCaptureStrength(&validMove);
+						if (validMove.strength > 0)
+						{
+							s_ValidMoves.moves[s_ValidMoves.count] = validMove;
+							s_ValidMoves.count++;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+Vec2 GameBoard_getBestMove()
+{
+	int maxStrength = 0;
+	int maxIndex = 0;
+
+	int i;
+	for (i = 0; i < s_ValidMoves.count; i++)
+	{
+		if (s_ValidMoves.moves[i].strength > maxStrength)
+		{
+			maxStrength = s_ValidMoves.moves[i].strength;
+			maxIndex = i;
+		}
+	}
+
+	return s_ValidMoves.moves[maxIndex].coord;
 }
 
 BOOL GameBoard_isValidMove(Vec2 coords)
@@ -149,10 +235,6 @@ BOOL GameBoard_isValidMove(Vec2 coords)
 	/* if move is outside of bounds, return early */
 	if (!isInBounds(coords))
 		return FALSE;
-
-	/* if valid moves haven't been calculated yet, calculate them */
-	if (s_ValidMoves.count == 0)
-		calculateValidMoves();
 
 	/* look for move in valid moves, if found, move is valid */
 	int i;
@@ -169,12 +251,49 @@ BOOL GameBoard_isValidMove(Vec2 coords)
 
 void GameBoard_playMove(Vec2 coords)
 {
-	s_Board[coords.x][coords.y] = s_CurrentTurn;
+	const char opponentPiece = getOpponentPiece();
 
-	// TODO: capture pieces
+	/* get valid move corresponding to these coords */
+	ValidMove* pValidMove = NULL;
+	ValidMove* pMove;
+	int i;
+	for (i = 0; i < s_ValidMoves.count; i++)
+	{
+		pMove = &s_ValidMoves.moves[i];
+		if (Vec2_equal(coords, pMove->coord))
+		{
+			pValidMove = pMove;
+			break;
+		}
+	}
 
-	/* now that move has been played, valid moves will need to be recalculated */
-	s_ValidMoves.count = 0;
+	if (pValidMove)
+	{
+		Vec2 currentCoord;
+		char currentPiece;
+
+		s_Board[coords.x][coords.y] = s_CurrentTurn;
+
+		/* loop through every valid direction */
+		for (i = 0; i < 8; i++)
+		{
+			if (pValidMove->directions & BIT(i))
+			{
+				currentCoord = pValidMove->coord;
+				currentPiece = opponentPiece;
+
+				/* flip all opponents pieces in that direction */
+				while (currentPiece != s_CurrentTurn)
+				{
+					currentCoord = Vec2_add(currentCoord, DIRECTIONS[i]);
+
+					currentPiece = s_Board[currentCoord.x][currentCoord.y];
+
+					s_Board[currentCoord.x][currentCoord.y] = s_CurrentTurn;
+				}
+			}
+		}
+	}
 }
 
 void GameBoard_save()

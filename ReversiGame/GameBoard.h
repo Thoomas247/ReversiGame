@@ -10,18 +10,31 @@ void GameBoard_create();
 
 /*
 * Prints the board to the output window.
+* Must call GameBoard_calculateValidMoves() first if valid moves should be shown.
 */
-void GameBoard_print();
+void GameBoard_print(BOOL showValidMoves);
+
+/*
+* Calculates all valid moves for this board configuration.
+* Must be called before GameBoard_print(TRUE), GameBoard_getBestMove(), GameBoard_isValidMove() and GameBoard_playMove().
+*/
+void GameBoard_calculateValidMoves();
+
+/*
+* Returns the valid move with the highest strength.
+* Must call GameBoard_calculateValidMoves() first.
+*/
+Vec2 GameBoard_getBestMove();
 
 /*
 * Returns whether the given move is a valid move.
-* Calls GameBoard_calculateValidMoves() if it has not been called since last move.
+* Must call GameBoard_calculateValidMoves() first.
 */
 BOOL GameBoard_isValidMove(Vec2 coords);
 
 /*
 * Applies the given move to the board.
-* Does not check for validity (call GameBoard_isValidMove() first)
+* Must call GameBoard_calculateValidMoves() first.
 */
 void GameBoard_playMove(Vec2 coords);
 

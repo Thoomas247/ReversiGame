@@ -11,6 +11,7 @@
 #define WHITE_PIECE 'O'
 #define BLACK_PIECE 'X'
 #define EMPTY_MARKER '.'
+#define VALID_MARKER 'P'
 
 typedef struct GameOptions
 {

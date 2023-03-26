@@ -6,6 +6,9 @@
 
 void handlePlayerMove()
 {
+	GameBoard_calculateValidMoves();
+	GameBoard_print(FALSE);
+
 	Vec2 coords;
 	BOOL validMove = FALSE;
 	while (!validMove)
@@ -29,7 +32,16 @@ void handlePlayerMove()
 
 void handleComputerMove()
 {
+	Vec2 move;
+
+	GameBoard_calculateValidMoves();
+	GameBoard_print(TRUE);
 	printf("Jogador IA (%c) esta a jogar\n", GameBoard_getTurn());
+	
+	move = GameBoard_getBestMove();
+
+	GameBoard_playMove(move);
+	printf("Jogador IA jogou %d %d\n", move.y, move.x);
 }
 
 int main(int argc, char* argv[])
@@ -41,8 +53,6 @@ int main(int argc, char* argv[])
 
 	while (TRUE)
 	{
-		GameBoard_print();
-
 		if (GameBoard_getTurn() == GameOptions_get()->playerPiece)
 		{
 			handlePlayerMove();
