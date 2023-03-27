@@ -1,6 +1,7 @@
 #include "GameBoard.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #include "GameOptions.h"
 #include "GameState.h"
@@ -177,6 +178,13 @@ void GameBoard_calculateValidMoves()
 {
 	const char opponentPiece = getOpponentPiece();
 
+	/* array to keep track of moves which have been calculated */
+	/* static so that it doesn't have to be reallocated every time */
+	static BOOL calculatedMoves[BOARD_WIDTH][BOARD_WIDTH];
+
+	/* clear calculated moves */
+	memset(calculatedMoves, FALSE, sizeof(calculatedMoves));
+
 	s_ValidMoves.count = 0;
 
 	Vec2 coord;
@@ -197,13 +205,17 @@ void GameBoard_calculateValidMoves()
 					/* if the adjacent square is in bounds and empty, check if move would result in captures */
 					if (isInBounds(validMove.coord) && s_Board[validMove.coord.x][validMove.coord.y] == EMPTY_MARKER)
 					{
-						// TODO: check if move has already been calculated
-
-						calculateCaptureStrength(&validMove);
-						if (validMove.strength > 0)
+						/* skip move if it has already been calculated */
+						if (!calculatedMoves[validMove.coord.x][validMove.coord.y])
 						{
-							s_ValidMoves.moves[s_ValidMoves.count] = validMove;
-							s_ValidMoves.count++;
+							calculatedMoves[validMove.coord.x][validMove.coord.y] = TRUE;
+
+							calculateCaptureStrength(&validMove);
+							if (validMove.strength > 0)
+							{
+								s_ValidMoves.moves[s_ValidMoves.count] = validMove;
+								s_ValidMoves.count++;
+							}
 						}
 					}
 				}
