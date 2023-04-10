@@ -9,6 +9,11 @@
 void GameBoard_create();
 
 /*
+* Returns the number of pieces of this type present on the board.
+*/
+int GameBoard_getPieceCount(char piece);
+
+/*
 * Prints the board to the output window.
 * Must call GameBoard_calculateValidMoves() first if valid moves should be shown.
 */

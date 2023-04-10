@@ -130,6 +130,30 @@ void GameBoard_create()
 	s_CurrentTurn = WHITE_PIECE;
 }
 
+int GameBoard_getPieceCount(char piece)
+{
+	/* no need to count if it is not a valid piece */
+	if (piece != WHITE_PIECE && piece != BLACK_PIECE)
+		return 0;
+
+	int count = 0;
+
+	int x;
+	int y;
+	for (x = 0; x < BOARD_WIDTH; x++)
+	{
+		for (y = 0; y < BOARD_WIDTH; y++)
+		{
+			if (s_Board[x][y] == piece)
+			{
+				++count;
+			}
+		}
+	}
+
+	return count;
+}
+
 void GameBoard_print(BOOL showValidMoves)
 {
 	int i;

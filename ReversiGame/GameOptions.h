@@ -34,6 +34,16 @@ void GameOptions_parse(int argc, char* argv[]);
 void GameOptions_print();
 
 /*
-* Provides read-only access to the GameOptions instance.
+* Returns whether the undo operation is allowed.
 */
-const GameOptions* GameOptions_get();
+BOOL GameOptions_allowUndo();
+
+/*
+* Returns the player's piece.
+*/
+char GameOptions_getPlayerPiece();
+
+/*
+* Returns the computer's piece.
+*/
+char GameOptions_getComputerPiece();

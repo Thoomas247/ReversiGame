@@ -8,8 +8,7 @@
 #define PIECE_ARG 'p'
 
 /*
-* Accessible globally via GameOptions_get().
-* We want write access to this variable to be restricted to GameOptions.c, so we declare it static.
+* We want access to this variable to be restricted to GameOptions.c, so we declare it static.
 */
 static GameOptions s_GameOptions;
 
@@ -17,7 +16,7 @@ void GameOptions_parse(int argc, char* argv[])
 {
 	/* reset game options */
 	s_GameOptions.saveFileName[0] = '\0';
-	s_GameOptions.allowUndo = TRUE;	// TODO: change to FALSE
+	s_GameOptions.allowUndo = FALSE;
 	s_GameOptions.playerPiece = WHITE_PIECE;
 
 	/* find valid command line arguments */
@@ -67,7 +66,20 @@ void GameOptions_print()
 	printf("Player Piece: %c\n", s_GameOptions.playerPiece);
 }
 
-const GameOptions* GameOptions_get()
+BOOL GameOptions_allowUndo()
 {
-	return &s_GameOptions;
+	return s_GameOptions.allowUndo;
+}
+
+char GameOptions_getPlayerPiece()
+{
+	return s_GameOptions.playerPiece;
+}
+
+char GameOptions_getComputerPiece()
+{
+	if (s_GameOptions.playerPiece == WHITE_PIECE)
+		return BLACK_PIECE;
+
+	return WHITE_PIECE;
 }

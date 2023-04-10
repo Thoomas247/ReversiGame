@@ -44,7 +44,7 @@ static Vec2 getPlayerMove()
 		}
 
 		/* check for a successful undo read */
-		else if (GameOptions_get()->allowUndo && scanf("%c", &undoChar) == 1 && tolower(undoChar) == UNDO_CHAR)
+		else if (GameOptions_allowUndo() && scanf("%c", &undoChar) == 1 && tolower(undoChar) == UNDO_CHAR)
 		{
 			printf("\n");
 			GameBoard_undo();
@@ -89,6 +89,9 @@ void Game_start(int argc, char* argv[])
 
 	GameBoard_create();
 
+	int playerPieceCount;
+	int computerPieceCount;
+
 	Vec2 move;
 	BOOL playing = TRUE;
 	while (playing)
@@ -98,16 +101,20 @@ void Game_start(int argc, char* argv[])
 		/* check if game has ended */
 		if (!GameBoard_hasValidMoves())
 		{
-			/* TODO: count pieces and end game */
+			/* count pieces and declare winner */
+			playerPieceCount = GameBoard_getPieceCount(GameOptions_getPlayerPiece());
+			computerPieceCount = GameBoard_getPieceCount(GameOptions_getComputerPiece());
+
+			playing = FALSE;
 		}
 
 		else
 		{
 			/* handle the current turn */
-			if (GameBoard_getTurn() == GameOptions_get()->playerPiece)
+			if (GameBoard_getTurn() == GameOptions_getPlayerPiece())
 			{
 				/* save the game state if undo is allowed */
-				if (GameOptions_get()->allowUndo)
+				if (GameOptions_allowUndo())
 				{
 					GameBoard_save();
 				}
