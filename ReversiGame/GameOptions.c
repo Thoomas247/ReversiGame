@@ -17,7 +17,7 @@ void GameOptions_parse(int argc, char* argv[])
 {
 	/* reset game options */
 	s_GameOptions.saveFileName[0] = '\0';
-	s_GameOptions.allowUndo = FALSE;
+	s_GameOptions.allowUndo = TRUE;	// TODO: change to FALSE
 	s_GameOptions.playerPiece = WHITE_PIECE;
 
 	/* find valid command line arguments */

@@ -7,45 +7,58 @@
 #include "GameState.h"
 #include "GameBoard.h"
 
-static void handlePlayerTurn()
+/*
+* Returns the move which the player wants to play.
+* Handles undo operations as well, and will always return a valid move given that one exists.
+*/
+static Vec2 getPlayerMove()
 {
 	GameBoard_print(FALSE);
 
 	char buf[16];
 	char undoChar;
 
-	Vec2 coords;
+	Vec2 move;
 	BOOL validMove = FALSE;
-	while (!validMove)
+	do
 	{
 		/* get player input */
 		printf("Jogador H (%c) (linha e coluna) = ", GameBoard_getTurn());
 
 		if (fgets(buf, 16, stdin) != NULL)
 		{
-			if (sscanf(buf, "%d %d", &coords.y, &coords.x) == 2 && GameBoard_isValidMove(coords))
+			/* check for a successful move read */
+			if (sscanf(buf, "%d %d", &move.y, &move.x) == 2 && GameBoard_isValidMove(move))
 			{
 				validMove = TRUE;
 			}
 
+			/* check for a successful undo read */
 			else if (GameOptions_get()->allowUndo && sscanf(buf, "%c", &undoChar) == 1 && tolower(undoChar) == UNDO_CHAR)
 			{
+				printf("\n");
 				GameBoard_undo();
 				GameBoard_calculateValidMoves();
 				GameBoard_print(FALSE);
 			}
 
+			/* handle invalid input */
 			else
 			{
 				printf("\nMovimento invalido, tente novamente...\n");
 			}
 		}
-	}
+	} 
+	while (!validMove);
 
-	GameBoard_playMove(coords);
+	return move;
 }
 
-static void handleComputerTurn()
+/*
+* Returns the move which the AI wants to play.
+* Will always return a valid move given that one exists.
+*/
+static Vec2 getComputerMove()
 {
 	Vec2 move;
 
@@ -54,8 +67,9 @@ static void handleComputerTurn()
 
 	move = GameBoard_getBestMove();
 
-	GameBoard_playMove(move);
 	printf("Jogador IA jogou %d %d\n", move.y, move.x);
+
+	return move;
 }
 
 void Game_start(int argc, char* argv[])
@@ -64,6 +78,7 @@ void Game_start(int argc, char* argv[])
 
 	GameBoard_create();
 
+	Vec2 move;
 	BOOL playing = TRUE;
 	while (playing)
 	{
@@ -72,26 +87,32 @@ void Game_start(int argc, char* argv[])
 		/* check if game has ended */
 		if (!GameBoard_hasValidMoves())
 		{
-			/* TODO: count pieces */
+			/* TODO: count pieces and end game */
 		}
 
-		if (GameBoard_getTurn() == GameOptions_get()->playerPiece)
-		{
-			handlePlayerTurn();
-		}
 		else
 		{
-			handleComputerTurn();
+			/* handle the current turn */
+			if (GameBoard_getTurn() == GameOptions_get()->playerPiece)
+			{
+				move = getPlayerMove();
+			}
+			else
+			{
+				move = getComputerMove();
+			}
+
+			/* save the game state if undo is allowed */
+			if (GameOptions_get()->allowUndo)
+			{
+				GameBoard_save();
+			}
+
+			printf("\n");
+
+			GameBoard_playMove(move);
+			GameBoard_swapTurn();
 		}
-
-		if (GameOptions_get()->allowUndo)
-		{
-			GameBoard_save();
-		}
-
-		printf("\n");
-
-		GameBoard_swapTurn();
 	}
 
 	GameState_freeAll();
