@@ -8,6 +8,8 @@
 
 #define BOARD_WIDTH 8
 
+#define UNDO_CHAR 'u'
+
 #define WHITE_PIECE 'O'
 #define BLACK_PIECE 'X'
 #define EMPTY_MARKER '.'
