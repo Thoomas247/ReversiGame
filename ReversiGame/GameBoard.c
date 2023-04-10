@@ -224,6 +224,14 @@ void GameBoard_calculateValidMoves()
 	}
 }
 
+BOOL GameBoard_hasValidMoves()
+{
+	if (s_ValidMoves.count > 0)
+		return TRUE;
+
+	return FALSE;
+}
+
 Vec2 GameBoard_getBestMove()
 {
 	int maxStrength = 0;

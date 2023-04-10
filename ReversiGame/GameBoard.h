@@ -16,9 +16,15 @@ void GameBoard_print(BOOL showValidMoves);
 
 /*
 * Calculates all valid moves for this board configuration.
-* Must be called before GameBoard_print(TRUE), GameBoard_getBestMove(), GameBoard_isValidMove() and GameBoard_playMove().
+* Must be called before GameBoard_print(TRUE), GameBoard_hasValidMoves(), GameBoard_getBestMove(), GameBoard_isValidMove() and GameBoard_playMove().
 */
 void GameBoard_calculateValidMoves();
+
+/* 
+* Returns whether there are any valid moves for this turn.
+* FALSE indicates that the game has ended.
+*/
+BOOL GameBoard_hasValidMoves();
 
 /*
 * Returns the valid move with the highest strength.
