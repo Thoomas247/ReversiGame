@@ -100,20 +100,60 @@ static Vec2 getComputerMove()
 	return move;
 }
 
+/*
+* Prints the score and winner.
+*/
+static void printWinner()
+{
+	int playerScore;
+	int computerScore;
+
+	/* print the final board */
+	GameBoard_print(FALSE);
+
+	/* print scores and winner */
+	playerScore = GameBoard_getPieceCount(GameOptions_getPlayerPiece());
+	computerScore = GameBoard_getPieceCount(GameOptions_getComputerPiece());
+
+	printf("\n");
+
+	if (playerScore == computerScore)
+	{
+		printf("Jogo terminou empatado!\n");
+	}
+
+	else if (playerScore > computerScore)
+	{
+		printf("Jogador H ganhou!\n");
+	}
+
+	else
+	{
+		printf("Jogador IA ganhou!\n");
+	}
+
+	printf("Jogador H: %d\tJogador IA: %d\n", playerScore, computerScore);
+}
+
 void Game_start(int argc, char* argv[])
 {
+	Vec2 move;
+	BOOL playing = TRUE;
+	BOOL lastPlayerPlayed = FALSE;
+
 	GameOptions_parse(argc, argv);
 
 	GameBoard_create();
 
-	Vec2 move;
-	BOOL playing = TRUE;
 	while (playing)
 	{
 		GameBoard_calculateValidMoves();
 
+		/* play turn if possible */
 		if (GameBoard_hasValidMoves())
 		{
+			lastPlayerPlayed = TRUE;
+
 			/* handle the current turn */
 			if (GameBoard_getTurn() == GameOptions_getPlayerPiece())
 			{
@@ -135,10 +175,17 @@ void Game_start(int argc, char* argv[])
 			GameBoard_playMove(move);
 		}
 
-		/* check if current player doesn't have valid moves because they lost */
-		else if (GameBoard_getPieceCount(GameBoard_getTurn()) == 0)
+		/* end game if neither player can play or current player doesn't have any pieces */
+		else if (lastPlayerPlayed == FALSE || GameBoard_getPieceCount(GameBoard_getTurn()) == 0)
 		{
+			printWinner();
 			playing = FALSE;
+		}
+
+		/* otherwise, skip turn */
+		else
+		{
+			lastPlayerPlayed = FALSE;
 		}
 
 		GameBoard_swapTurn();
