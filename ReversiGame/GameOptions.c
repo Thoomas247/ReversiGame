@@ -2,10 +2,11 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
-#define FILE_ARG 'f'
-#define UNDO_ARG 'u'
-#define PIECE_ARG 'p'
+#define FILE_ARG "-f"
+#define UNDO_ARG "-u"
+#define PIECE_ARG "-p"
 
 /*
 * We want access to this variable to be restricted to GameOptions.c, so we declare it static.
@@ -20,40 +21,37 @@ void GameOptions_parse(int argc, char* argv[])
 	s_GameOptions.playerPiece = WHITE_PIECE;
 
 	/* find valid command line arguments */
-	char arg;
 	int i;
 	for (i = 0; i < argc; i++)
 	{
-		if (sscanf(argv[i], "-%c", &arg))
+		if (strcmp(argv[i], FILE_ARG) == 0)
 		{
-			if (arg == FILE_ARG)
+			/* read the next argument, which should be the file name */
+			if (sscanf(argv[i + 1], "%s", &s_GameOptions.saveFileName) && s_GameOptions.saveFileName[0] != '-')
 			{
-				/* read the next argument, which should be the file name */
-				if (sscanf(argv[i + 1], "%s", &s_GameOptions.saveFileName) && s_GameOptions.saveFileName[0] != '-')
-				{
-					i++;
-				}
-
-				/* if file name could not be read or is invalid, make sure we reset s_GameOptions.saveFileName */
-				else
-				{
-					s_GameOptions.saveFileName[0] = '\0';
-				}
+				i++;
 			}
 
-			else if (arg == UNDO_ARG)
+			/* if file name could not be read or is invalid, make sure we reset s_GameOptions.saveFileName */
+			else
 			{
-				s_GameOptions.allowUndo = TRUE;
+				s_GameOptions.saveFileName[0] = '\0';
 			}
+		}
 
-			else if (arg == PIECE_ARG)
+		else if (strcmp(argv[i], UNDO_ARG) == 0)
+		{
+			s_GameOptions.allowUndo = TRUE;
+		}
+
+		else if (strcmp(argv[i], PIECE_ARG) == 0)
+		{
+			/* read the next argument, which should be a character (WHITE_PIECE or BLACK_PIECE) */
+			char piece;
+			if (sscanf(argv[i + 1], "%c", &piece) && (piece == WHITE_PIECE || piece == BLACK_PIECE))
 			{
-				/* read the next argument, which should be a character (WHITE_PIECE or BLACK_PIECE) */
-				if (sscanf(argv[i + 1], "%c", &arg) && (arg == WHITE_PIECE || arg == BLACK_PIECE))
-				{
-					s_GameOptions.playerPiece = arg;
-					i++;
-				}
+				s_GameOptions.playerPiece = piece;
+				i++;
 			}
 		}
 	}

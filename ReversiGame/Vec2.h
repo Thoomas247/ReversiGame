@@ -18,3 +18,8 @@ Vec2 Vec2_add(Vec2 a, Vec2 b);
 * Returns true if a and b are equal, false otherwise.
 */
 BOOL Vec2_equal(Vec2 a, Vec2 b);
+
+/*
+* Returns the sum of the components of a.
+*/
+int Vec2_componentSum(Vec2 a);

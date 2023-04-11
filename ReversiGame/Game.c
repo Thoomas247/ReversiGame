@@ -35,30 +35,42 @@ static Vec2 getPlayerMove()
 		printf("Jogador H (%c) (linha e coluna) = ", GameBoard_getTurn());
 
 		/* check for a successful move read */
-		if (scanf("%d %d", &move.y, &move.x) == 2 && GameBoard_isValidMove(move))
+		if (scanf("%d %d", &move.y, &move.x) == 2)
 		{
-			validMove = TRUE;
-
-			/* if too many characters are written, fgets will not clear the input buffer properly, so we do it manually */
-			clearInputBuffer();
+			if (GameBoard_isValidMove(move))
+			{
+				validMove = TRUE;
+			}
+			else
+			{
+				printf("\nPosicao invalida. Tente novamente...\n");
+			}
 		}
 
 		/* check for a successful undo read */
-		else if (GameOptions_allowUndo() && scanf("%c", &undoChar) == 1 && tolower(undoChar) == UNDO_CHAR)
+		else if (GameOptions_allowUndo() && scanf("%c", &undoChar) == 1)
 		{
-			printf("\n");
-			GameBoard_undo();
-			GameBoard_calculateValidMoves();
-			GameBoard_print(FALSE);
-
-			clearInputBuffer();
+			if (tolower(undoChar) == UNDO_CHAR)
+			{
+				printf("\n");
+				GameBoard_undo();
+				GameBoard_calculateValidMoves();
+				GameBoard_print(FALSE);
+			}
+			else
+			{
+				printf("\nComando desconhecido. Tente novamente...\n");
+			}
 		}
 
 		/* handle invalid input */
 		else
 		{
-			printf("\nMovimento invalido, tente novamente...\n");
+			printf("\nEntrada invalida. Tente novamente...\n");
 		}
+
+		/* if too many characters are written, fgets will not clear the input buffer properly, so we do it manually */
+		clearInputBuffer();
 	} 
 	while (!validMove);
 

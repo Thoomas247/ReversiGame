@@ -1,37 +1,17 @@
 #include "GameBoard.h"
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include "GameOptions.h"
 #include "GameState.h"
 
+#include "ValidMove.h"
+
 #define MAX_VALID_MOVES BOARD_WIDTH * BOARD_WIDTH
 
 #define BIT(n) 1 << n
-
-typedef unsigned int DirectionField;
-
-/*
-* Struct representing a single valid move and the number of points it would give.
-* Only visible within GameBoard.c.
-*/
-typedef struct ValidMove
-{
-	Vec2 coord;
-	int strength;
-	DirectionField directions;
-} ValidMove;
-
-/*
-* A list representing all valid moves for this turn.
-* Only visible within GameBoard.c.
-*/
-typedef struct ValidMoveList
-{
-	ValidMove moves[MAX_VALID_MOVES];
-	int count;
-} ValidMoveList;
 
 /* we want access to these variables to be restricted to GameBoard.c, so we declare them static */
 static char s_Board[BOARD_WIDTH][BOARD_WIDTH];
@@ -154,15 +134,42 @@ int GameBoard_getPieceCount(char piece)
 	return count;
 }
 
+/*
+* Helper to set valid move positions to VALID_MARKER using ValidMoveList_forEach.
+*/
+static void setValidMarker(ValidMove* move)
+{
+	s_Board[move->coord.x][move->coord.y] = VALID_MARKER;
+}
+
+/*
+* Helper to set valid move positions to EMPTY_MARKER using ValidMoveList_forEach.
+*/
+static void setEmptyMarker(ValidMove* move)
+{
+	s_Board[move->coord.x][move->coord.y] = EMPTY_MARKER;
+}
+
 void GameBoard_print(BOOL showValidMoves)
 {
 	int i;
 
+	/* change valid positions to VALID_MARKER */
+	/*
 	if (showValidMoves)
 	{
-		for (i = 0; i < s_ValidMoves.count; i++)
+		ValidMoveList_forEach(&s_ValidMoves, &setValidMarker);
+	}
+	*/
+
+	if (showValidMoves)
+	{
+		ValidMoveNode* it = s_ValidMoves.pFirst;
+
+		while (it != NULL)
 		{
-			s_Board[s_ValidMoves.moves[i].coord.x][s_ValidMoves.moves[i].coord.y] = VALID_MARKER;
+			s_Board[it->data.coord.x][it->data.coord.y] = VALID_MARKER;
+			it = it->pNext;
 		}
 	}
 
@@ -189,11 +196,22 @@ void GameBoard_print(BOOL showValidMoves)
 		printf("\n");
 	}
 
+	/* change valid positions back to EMPTY_MARKER */
+	/*
 	if (showValidMoves)
 	{
-		for (i = 0; i < s_ValidMoves.count; i++)
+		ValidMoveList_forEach(&s_ValidMoves, &setEmptyMarker);
+	}
+	*/
+
+	if (showValidMoves)
+	{
+		ValidMoveNode* it = s_ValidMoves.pFirst;
+
+		while (it != NULL)
 		{
-			s_Board[s_ValidMoves.moves[i].coord.x][s_ValidMoves.moves[i].coord.y] = EMPTY_MARKER;
+			s_Board[it->data.coord.x][it->data.coord.y] = EMPTY_MARKER;
+			it = it->pNext;
 		}
 	}
 }
@@ -209,7 +227,7 @@ void GameBoard_calculateValidMoves()
 	/* clear calculated moves */
 	memset(calculatedMoves, FALSE, sizeof(calculatedMoves));
 
-	s_ValidMoves.count = 0;
+	ValidMoveList_clear(&s_ValidMoves);
 
 	Vec2 coord;
 	ValidMove validMove;
@@ -235,10 +253,11 @@ void GameBoard_calculateValidMoves()
 							calculatedMoves[validMove.coord.x][validMove.coord.y] = TRUE;
 
 							calculateCaptureStrength(&validMove);
+
+							/* add move to list if it results in captures */
 							if (validMove.strength > 0)
 							{
-								s_ValidMoves.moves[s_ValidMoves.count] = validMove;
-								s_ValidMoves.count++;
+								ValidMoveList_add(&s_ValidMoves, validMove);
 							}
 						}
 					}
@@ -258,20 +277,27 @@ BOOL GameBoard_hasValidMoves()
 
 Vec2 GameBoard_getBestMove()
 {
-	int maxStrength = 0;
-	int maxIndex = 0;
+	ValidMoveNode* it = s_ValidMoves.pFirst;
+	ValidMove* pBestMove = &it->data;
 
-	int i;
-	for (i = 0; i < s_ValidMoves.count; i++)
+	while (it != NULL)
 	{
-		if (s_ValidMoves.moves[i].strength > maxStrength)
+		/* if the current move is stronger, replace best move */
+		if (it->data.strength > pBestMove->strength)
 		{
-			maxStrength = s_ValidMoves.moves[i].strength;
-			maxIndex = i;
+			pBestMove = &it->data;
 		}
+
+		/* if current move has the same strength, but is closer to the top-left, replace best move */
+		else if (it->data.strength == pBestMove->strength && Vec2_componentSum(it->data.coord) < Vec2_componentSum(pBestMove->coord))
+		{
+			pBestMove = &it->data;
+		}
+
+		it = it->pNext;
 	}
 
-	return s_ValidMoves.moves[maxIndex].coord;
+	return pBestMove->coord;
 }
 
 BOOL GameBoard_isValidMove(Vec2 coords)
@@ -280,14 +306,14 @@ BOOL GameBoard_isValidMove(Vec2 coords)
 	if (!isInBounds(coords))
 		return FALSE;
 
-	/* look for move in valid moves, if found, move is valid */
-	int i;
-	Vec2 moveCoords;
-	for (i = 0; i < s_ValidMoves.count; i++)
+	/* look for move in valid moves: if found, move is valid */
+	ValidMoveNode* it = s_ValidMoves.pFirst;
+	while (it != NULL)
 	{
-		moveCoords = s_ValidMoves.moves[i].coord;
-		if (Vec2_equal(coords, moveCoords))
+		if (Vec2_equal(coords, it->data.coord))
 			return TRUE;
+
+		it = it->pNext;
 	}
 
 	return FALSE;
@@ -299,15 +325,20 @@ void GameBoard_playMove(Vec2 coords)
 
 	/* get valid move corresponding to these coords */
 	ValidMove* pValidMove = NULL;
-	ValidMove* pMove;
-	int i;
-	for (i = 0; i < s_ValidMoves.count; i++)
+
+	ValidMoveNode* it = s_ValidMoves.pFirst;
+	while (it != NULL)
 	{
-		pMove = &s_ValidMoves.moves[i];
-		if (Vec2_equal(coords, pMove->coord))
+		if (Vec2_equal(coords, it->data.coord))
 		{
-			pValidMove = pMove;
-			break;
+			pValidMove = &it->data;
+
+			/* stop the loop */
+			it = NULL;
+		}
+		else
+		{
+			it = it->pNext;
 		}
 	}
 
@@ -319,6 +350,7 @@ void GameBoard_playMove(Vec2 coords)
 		s_Board[coords.x][coords.y] = s_CurrentTurn;
 
 		/* loop through every valid direction */
+		int i;
 		for (i = 0; i < 8; i++)
 		{
 			if (pValidMove->directions & BIT(i))
@@ -330,7 +362,6 @@ void GameBoard_playMove(Vec2 coords)
 				while (currentPiece != s_CurrentTurn)
 				{
 					currentCoord = Vec2_add(currentCoord, DIRECTIONS[i]);
-
 					currentPiece = s_Board[currentCoord.x][currentCoord.y];
 
 					s_Board[currentCoord.x][currentCoord.y] = s_CurrentTurn;

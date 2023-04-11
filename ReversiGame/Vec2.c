@@ -10,3 +10,8 @@ BOOL Vec2_equal(Vec2 a, Vec2 b)
 {
 	return (a.x == b.x && a.y == b.y);
 }
+
+int Vec2_componentSum(Vec2 a)
+{
+	return a.x + a.y;
+}
