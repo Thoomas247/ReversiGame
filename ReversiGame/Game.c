@@ -106,26 +106,13 @@ void Game_start(int argc, char* argv[])
 
 	GameBoard_create();
 
-	int playerPieceCount;
-	int computerPieceCount;
-
 	Vec2 move;
 	BOOL playing = TRUE;
 	while (playing)
 	{
 		GameBoard_calculateValidMoves();
 
-		/* check if game has ended */
-		if (!GameBoard_hasValidMoves())
-		{
-			/* count pieces and declare winner */
-			playerPieceCount = GameBoard_getPieceCount(GameOptions_getPlayerPiece());
-			computerPieceCount = GameBoard_getPieceCount(GameOptions_getComputerPiece());
-
-			playing = FALSE;
-		}
-
-		else
+		if (GameBoard_hasValidMoves())
 		{
 			/* handle the current turn */
 			if (GameBoard_getTurn() == GameOptions_getPlayerPiece())
@@ -146,8 +133,15 @@ void Game_start(int argc, char* argv[])
 			printf("\n");
 
 			GameBoard_playMove(move);
-			GameBoard_swapTurn();
 		}
+
+		/* check if current player doesn't have valid moves because they lost */
+		else if (GameBoard_getPieceCount(GameBoard_getTurn()) == 0)
+		{
+			playing = FALSE;
+		}
+
+		GameBoard_swapTurn();
 	}
 
 	GameState_freeAll();

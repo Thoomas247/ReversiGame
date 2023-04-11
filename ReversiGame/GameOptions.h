@@ -3,6 +3,9 @@
 * Gonçalo Paiva	(106888)
 */
 
+#ifndef GAMEOPTIONS_H_
+#define GAMEOPTIONS_H_
+
 #define BOOL int
 #define TRUE 1
 #define FALSE 0
@@ -50,3 +53,5 @@ char GameOptions_getPlayerPiece();
 * Returns the computer's piece.
 */
 char GameOptions_getComputerPiece();
+
+#endif /* GAMEOPTIONS_H_ */

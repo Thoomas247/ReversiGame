@@ -3,6 +3,9 @@
 * Gonçalo Paiva	(106888)
 */
 
+#ifndef GAMESTATE_H_
+#define GAMESTATE_H_
+
 #include "GameOptions.h"
 
 typedef struct GameState
@@ -28,3 +31,5 @@ void GameState_freeAll();
 * Used by undo functionality.
 */
 void GameState_loadPrevious(char* turn, char* pBoard);
+
+#endif /* GAMESTATE_H_ */

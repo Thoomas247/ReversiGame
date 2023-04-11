@@ -3,6 +3,9 @@
 * Gonçalo Paiva	(106888)
 */
 
+#ifndef GAMEBOARD_H_
+#define GAMEBOARD_H_
+
 #include "GameOptions.h"
 #include "Vec2.h"
 
@@ -71,3 +74,5 @@ void GameBoard_swapTurn();
 * Returns either WHITE_PIECE or BLACK_PIECE to indicate who's turn it is.
 */
 char GameBoard_getTurn();
+
+#endif /* GAMEBOARD_H_ */

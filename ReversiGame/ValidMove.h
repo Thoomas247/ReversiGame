@@ -3,6 +3,9 @@
 * Gonçalo Paiva	(106888)
 */
 
+#ifndef VALIDMOVE_H_
+#define VALIDMOVE_H_
+
 #include "Vec2.h"
 
 typedef unsigned int DirectionField;
@@ -32,7 +35,7 @@ typedef struct ValidMoveNode
 typedef struct ValidMoveList
 {
 	int count;
-	ValidMove* pFirst;
+	ValidMoveNode* pFirst;
 } ValidMoveList;
 
 /*
@@ -50,3 +53,4 @@ void ValidMoveList_add(ValidMoveList* pList, ValidMove move);
 */
 void ValidMoveList_clear(ValidMoveList* pList);
 
+#endif /* VALIDMOVE_H_ */

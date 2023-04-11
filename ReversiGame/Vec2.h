@@ -3,6 +3,9 @@
 * Gonçalo Paiva	(106888)
 */
 
+#ifndef VEC2_H_
+#define VEC2_H_
+
 #include "GameOptions.h"
 
 typedef struct Vec2
@@ -26,3 +29,5 @@ BOOL Vec2_equal(Vec2 a, Vec2 b);
 * Returns the sum of the components of a.
 */
 int Vec2_componentSum(Vec2 a);
+
+#endif VEC2_H_
