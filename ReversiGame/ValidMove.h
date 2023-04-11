@@ -1,4 +1,7 @@
-#pragma once
+/*
+* Thomas Amiouny (107527)
+* Gonçalo Paiva	(106888)
+*/
 
 #include "Vec2.h"
 

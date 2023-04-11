@@ -1,3 +1,8 @@
+/*
+* Thomas Amiouny (107527)
+* Gonçalo Paiva	(106888)
+*/
+
 #include "GameState.h"
 
 #include <stdlib.h>

@@ -1,3 +1,8 @@
+/*
+* Thomas Amiouny (107527)
+* Gonçalo Paiva	(106888)
+*/
+
 #include "ValidMove.h"
 
 #include <stdlib.h>
