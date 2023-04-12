@@ -139,34 +139,9 @@ int GameBoard_getPieceCount(char piece)
 	return count;
 }
 
-/*
-* Helper to set valid move positions to VALID_MARKER using ValidMoveList_forEach.
-*/
-static void setValidMarker(ValidMove* move)
-{
-	s_Board[move->coord.x][move->coord.y] = VALID_MARKER;
-}
-
-/*
-* Helper to set valid move positions to EMPTY_MARKER using ValidMoveList_forEach.
-*/
-static void setEmptyMarker(ValidMove* move)
-{
-	s_Board[move->coord.x][move->coord.y] = EMPTY_MARKER;
-}
-
 void GameBoard_print(BOOL showValidMoves)
 {
-	int i;
-
 	/* change valid positions to VALID_MARKER */
-	/*
-	if (showValidMoves)
-	{
-		ValidMoveList_forEach(&s_ValidMoves, &setValidMarker);
-	}
-	*/
-
 	if (showValidMoves)
 	{
 		ValidMoveNode* it = s_ValidMoves.pFirst;
@@ -181,7 +156,7 @@ void GameBoard_print(BOOL showValidMoves)
 	/* print column numbers */
 	printf("  ");
 
-	//int i;
+	int i;
 	for (i = 0; i < BOARD_WIDTH; i++)
 	{
 		printf(" %d", i);
@@ -189,6 +164,7 @@ void GameBoard_print(BOOL showValidMoves)
 
 	printf("\n");
 
+	/* print grid */
 	int x;
 	int y;
 	for (y = 0; y < BOARD_WIDTH; y++)
@@ -202,13 +178,6 @@ void GameBoard_print(BOOL showValidMoves)
 	}
 
 	/* change valid positions back to EMPTY_MARKER */
-	/*
-	if (showValidMoves)
-	{
-		ValidMoveList_forEach(&s_ValidMoves, &setEmptyMarker);
-	}
-	*/
-
 	if (showValidMoves)
 	{
 		ValidMoveNode* it = s_ValidMoves.pFirst;
@@ -376,13 +345,14 @@ void GameBoard_playMove(Vec2 coords)
 	}
 }
 
-void GameBoard_save()
+void GameBoard_save(Vec2 move)
 {
-	GameState_save(s_CurrentTurn, &s_Board[0][0]);
+	GameState_save(s_CurrentTurn, &s_Board[0][0], move);
 }
 
 void GameBoard_undo()
 {
+	GameState_loadPrevious(&s_CurrentTurn, &s_Board[0][0]);
 	GameState_loadPrevious(&s_CurrentTurn, &s_Board[0][0]);
 }
 

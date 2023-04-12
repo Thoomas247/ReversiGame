@@ -10,7 +10,7 @@
 #define TRUE 1
 #define FALSE 0
 
-#define MAX_FILE_NAME_SIZE 64
+#define MAX_FILE_NAME_SIZE 128
 
 #define BOARD_WIDTH 8
 
@@ -38,6 +38,12 @@ void GameOptions_parse(int argc, char* argv[]);
 * Used for debugging.
 */
 void GameOptions_print();
+
+/*
+* Returns the name of the file to save the game state to.
+* NULL if saving is disabled.
+*/
+const char* GameOptions_getSaveFileName();
 
 /*
 * Returns whether the undo operation is allowed.

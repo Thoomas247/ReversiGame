@@ -69,6 +69,11 @@ void GameOptions_print()
 	printf("Player Piece: %c\n", s_GameOptions.playerPiece);
 }
 
+const char* GameOptions_getSaveFileName()
+{
+	return s_GameOptions.saveFileName;
+}
+
 BOOL GameOptions_allowUndo()
 {
 	return s_GameOptions.allowUndo;

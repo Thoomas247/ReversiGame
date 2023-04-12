@@ -34,7 +34,7 @@ static void copyBoard(char* pDst, const char* pSrc)
 	memcpy(pDst, pSrc, sizeof(char) * BOARD_WIDTH * BOARD_WIDTH);
 }
 
-void GameState_save(char turn, const char* pBoard)
+void GameState_save(char turn, const char* pBoard, Vec2 move)
 {
 	/* early return if board is NULL */
 	if (!pBoard)
@@ -57,7 +57,63 @@ void GameState_save(char turn, const char* pBoard)
 		s_pCurrentGameState->turn = turn;
 		copyBoard(&s_pCurrentGameState->board[0][0], pBoard);
 		s_pCurrentGameState->pLastState = lastState;
+		s_pCurrentGameState->move = move;
 	}
+}
+
+/*
+* Recursively prints all game states to the file in order.
+*/
+static void printRecursive(GameState* pState, FILE* pFile)
+{
+	if (!pState) return;
+
+	printRecursive(pState->pLastState, pFile);
+
+	/* print column numbers */
+	fprintf(pFile, "  ");
+
+	int i;
+	for (i = 0; i < BOARD_WIDTH; i++)
+	{
+		fprintf(pFile, " %d", i);
+	}
+
+	fprintf(pFile, "\n");
+
+	/* print grid */
+	int x;
+	int y;
+	for (y = 0; y < BOARD_WIDTH; y++)
+	{
+		fprintf(pFile, " %d ", y);
+		for (x = 0; x < BOARD_WIDTH; x++)
+		{
+			fprintf(pFile, "%c ", pState->board[x][y]);
+		}
+		fprintf(pFile, "\n");
+	}
+
+	/* print the played move */
+	fprintf(pFile, "(%d, %d)\n\n", pState->move.y, pState->move.x);
+}
+
+void GameState_printToFile(const char* fileName)
+{
+	if (!fileName) return;
+
+	FILE* pFile = fopen(fileName, "w");
+
+	/* exit if could not open the file */
+	if (!pFile)
+	{
+		printf("Ocorreu um erro ao salvar o jogo.");
+		return;
+	}
+
+	printRecursive(s_pCurrentGameState, pFile);
+
+	fclose(pFile);
 }
 
 void GameState_freeAll()

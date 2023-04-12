@@ -16,16 +16,93 @@
 * Reads stdin until '\n' or EOF is reached.
 * Used to get rid of any extra characters left in the buffer after a read.
 */
+static void clearInputBuffer();
+
+/*
+* Returns the move which the player wants to play.
+* Handles undo operations as well, and will always return a valid move given that one exists.
+*/
+static Vec2 getPlayerMove();
+
+/*
+* Returns the move which the AI wants to play.
+* Will always return a valid move given that one exists.
+*/
+static Vec2 getComputerMove();
+
+/*
+* Prints the score and winner.
+*/
+static void printWinner();
+
+void Game_start(int argc, char* argv[])
+{
+	Vec2 move;
+	BOOL playing = TRUE;
+	BOOL lastPlayerPlayed = FALSE;
+
+	GameOptions_parse(argc, argv);
+
+	GameBoard_create();
+
+	while (playing)
+	{
+		GameBoard_calculateValidMoves();
+
+		/* play turn if possible */
+		if (GameBoard_hasValidMoves())
+		{
+			lastPlayerPlayed = TRUE;
+
+			/* handle the current turn */
+			if (GameBoard_getTurn() == GameOptions_getPlayerPiece())
+			{
+				move = getPlayerMove();
+			}
+			else
+			{
+				move = getComputerMove();
+			}
+
+			printf("\n");
+
+			/* save the game state if undo is allowed or if the game needs to be saved */
+			if (GameOptions_allowUndo() || GameOptions_getSaveFileName())
+			{
+				GameBoard_save(move);
+			}
+
+			GameBoard_playMove(move);
+		}
+
+		/* end game if neither player can play or current player doesn't have any pieces */
+		else if (lastPlayerPlayed == FALSE || GameBoard_getPieceCount(GameBoard_getTurn()) == 0)
+		{
+			printWinner();
+			playing = FALSE;
+		}
+
+		/* otherwise, skip turn */
+		else
+		{
+			lastPlayerPlayed = FALSE;
+		}
+
+		GameBoard_swapTurn();
+	}
+
+	/* save the game to a file if requested */
+	GameState_printToFile(GameOptions_getSaveFileName());
+
+	GameState_freeAll();
+}
+
 static void clearInputBuffer()
 {
 	char clearChar;
 	while ((clearChar = getchar()) != '\n' && clearChar != EOF);
 }
 
-/*
-* Returns the move which the player wants to play.
-* Handles undo operations as well, and will always return a valid move given that one exists.
-*/
 static Vec2 getPlayerMove()
 {
 	GameBoard_print(FALSE);
@@ -76,16 +153,11 @@ static Vec2 getPlayerMove()
 
 		/* if too many characters are written, fgets will not clear the input buffer properly, so we do it manually */
 		clearInputBuffer();
-	} 
-	while (!validMove);
+	} while (!validMove);
 
 	return move;
 }
 
-/*
-* Returns the move which the AI wants to play.
-* Will always return a valid move given that one exists.
-*/
 static Vec2 getComputerMove()
 {
 	Vec2 move;
@@ -100,9 +172,6 @@ static Vec2 getComputerMove()
 	return move;
 }
 
-/*
-* Prints the score and winner.
-*/
 static void printWinner()
 {
 	int playerScore;
@@ -133,63 +202,4 @@ static void printWinner()
 	}
 
 	printf("Jogador H: %d\tJogador IA: %d\n", playerScore, computerScore);
-}
-
-void Game_start(int argc, char* argv[])
-{
-	Vec2 move;
-	BOOL playing = TRUE;
-	BOOL lastPlayerPlayed = FALSE;
-
-	GameOptions_parse(argc, argv);
-
-	GameBoard_create();
-
-	while (playing)
-	{
-		GameBoard_calculateValidMoves();
-
-		/* play turn if possible */
-		if (GameBoard_hasValidMoves())
-		{
-			lastPlayerPlayed = TRUE;
-
-			/* handle the current turn */
-			if (GameBoard_getTurn() == GameOptions_getPlayerPiece())
-			{
-				/* save the game state if undo is allowed */
-				if (GameOptions_allowUndo())
-				{
-					GameBoard_save();
-				}
-
-				move = getPlayerMove();
-			}
-			else
-			{
-				move = getComputerMove();
-			}
-
-			printf("\n");
-
-			GameBoard_playMove(move);
-		}
-
-		/* end game if neither player can play or current player doesn't have any pieces */
-		else if (lastPlayerPlayed == FALSE || GameBoard_getPieceCount(GameBoard_getTurn()) == 0)
-		{
-			printWinner();
-			playing = FALSE;
-		}
-
-		/* otherwise, skip turn */
-		else
-		{
-			lastPlayerPlayed = FALSE;
-		}
-
-		GameBoard_swapTurn();
-	}
-
-	GameState_freeAll();
 }

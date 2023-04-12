@@ -56,12 +56,12 @@ BOOL GameBoard_isValidMove(Vec2 coords);
 void GameBoard_playMove(Vec2 coords);
 
 /*
-* Saves the current board.
+* Saves the current board and the move which was played when the game was in this state.
 */
-void GameBoard_save();
+void GameBoard_save(Vec2 move);
 
 /*
-* Reverts to the last saved game board.
+* Reverts to the last saved game board where it was the player's turn to play.
 */
 void GameBoard_undo();
 
