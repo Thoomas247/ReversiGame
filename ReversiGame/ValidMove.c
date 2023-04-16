@@ -13,8 +13,7 @@
 */
 static ValidMoveNode* getLastNode(ValidMoveList* pList)
 {
-	ValidMoveNode* pNode;
-	pNode = pList->pFirst;
+	ValidMoveNode* pNode = pList->pFirst;
 
 	/* return NULL if list is empty */
 	if (!pNode) return NULL;
@@ -66,11 +65,10 @@ ValidMoveList ValidMoveList_create()
 void ValidMoveList_add(ValidMoveList* pList, ValidMove data)
 {
 	ValidMoveNode* pNode = allocateNode();
+	ValidMoveNode* pLast = getLastNode(pList);
 
 	/* return if allocation failed */
 	if (!pNode) return;
-
-	ValidMoveNode* pLast = getLastNode(pList);
 
 	if (!pLast)
 	{

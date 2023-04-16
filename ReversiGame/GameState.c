@@ -127,10 +127,10 @@ void GameState_freeAll()
 
 void GameState_loadPrevious(char* pTurn, char* pBoard)
 {
+	GameState* pLastState = s_pCurrentGameState->pLastState;
+
 	if (!s_pCurrentGameState)
 		return;
-
-	GameState* pLastState = s_pCurrentGameState->pLastState;
 
 	/* if there is no last state, do not modify turn or board */
 	if (!pLastState)

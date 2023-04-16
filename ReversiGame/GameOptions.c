@@ -20,13 +20,14 @@ static GameOptions s_GameOptions;
 
 void GameOptions_parse(int argc, char* argv[])
 {
+	int i;
+
 	/* reset game options */
 	s_GameOptions.saveFileName[0] = '\0';
 	s_GameOptions.allowUndo = FALSE;
 	s_GameOptions.playerPiece = WHITE_PIECE;
 
 	/* find valid command line arguments */
-	int i;
 	for (i = 0; i < argc; i++)
 	{
 		if (strcmp(argv[i], FILE_ARG) == 0)

@@ -60,11 +60,12 @@ static void calculateCaptureStrength(ValidMove* pValidMove)
 	Vec2 adjacentCoord;
 	char currentPiece;
 
+	int i;
+
 	pValidMove->strength = 0;
 	pValidMove->directions = 0;
 
 	/* check every direction for opposing pieces */
-	int i;
 	for (i = 0; i < 8; i++)
 	{
 		currentStrength = 0;
@@ -280,12 +281,13 @@ Vec2 GameBoard_getBestMove()
 
 BOOL GameBoard_isValidMove(Vec2 coords)
 {
+	ValidMoveNode* it = s_ValidMoves.pFirst;
+
 	/* if move is outside of bounds, return early */
 	if (!isInBounds(coords))
 		return FALSE;
 
 	/* look for move in valid moves: if found, move is valid */
-	ValidMoveNode* it = s_ValidMoves.pFirst;
 	while (it != NULL)
 	{
 		if (Vec2_equal(coords, it->data.coord))
@@ -303,6 +305,8 @@ void GameBoard_playMove(Vec2 coords)
 
 	/* get valid move corresponding to these coords */
 	ValidMove* pValidMove = NULL;
+
+	int i;
 
 	ValidMoveNode* it = s_ValidMoves.pFirst;
 	while (it != NULL)
@@ -328,7 +332,6 @@ void GameBoard_playMove(Vec2 coords)
 		s_Board[coords.x][coords.y] = s_CurrentTurn;
 
 		/* loop through every valid direction */
-		int i;
 		for (i = 0; i < 8; i++)
 		{
 			if (pValidMove->directions & BIT(i))
