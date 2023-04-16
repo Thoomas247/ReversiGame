@@ -107,7 +107,7 @@ void GameState_printToFile(const char* fileName)
 	/* exit if could not open the file */
 	if (!pFile)
 	{
-		printf("Ocorreu um erro ao salvar o jogo.");
+		printf("Ocorreu um erro ao guardar o jogo!");
 		return;
 	}
 
