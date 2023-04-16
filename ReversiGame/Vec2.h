@@ -30,4 +30,4 @@ BOOL Vec2_equal(Vec2 a, Vec2 b);
 */
 int Vec2_componentSum(Vec2 a);
 
-#endif VEC2_H_
+#endif /* VEC2_H_ */

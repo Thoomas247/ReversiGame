@@ -32,7 +32,7 @@ void GameOptions_parse(int argc, char* argv[])
 		if (strcmp(argv[i], FILE_ARG) == 0)
 		{
 			/* read the next argument, which should be the file name */
-			if (sscanf(argv[i + 1], "%s", &s_GameOptions.saveFileName) && s_GameOptions.saveFileName[0] != '-')
+			if (sscanf(argv[i + 1], "%s", s_GameOptions.saveFileName) && s_GameOptions.saveFileName[0] != '-')
 			{
 				i++;
 			}

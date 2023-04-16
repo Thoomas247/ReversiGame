@@ -13,7 +13,8 @@
 */
 static ValidMoveNode* getLastNode(ValidMoveList* pList)
 {
-	ValidMoveNode* pNode = pList->pFirst;
+	ValidMoveNode* pNode;
+	pNode = pList->pFirst;
 
 	/* return NULL if list is empty */
 	if (!pNode) return NULL;

@@ -36,12 +36,14 @@ static void copyBoard(char* pDst, const char* pSrc)
 
 void GameState_save(char turn, const char* pBoard, Vec2 move)
 {
+	GameState* lastState;
+
 	/* early return if board is NULL */
 	if (!pBoard)
 		return;
 
 	/* allocate space for the game state */
-	GameState* lastState = s_pCurrentGameState;
+	lastState = s_pCurrentGameState;
 	s_pCurrentGameState = (GameState*)calloc(1, sizeof(GameState));
 
 	/* check for allocation success */
@@ -66,6 +68,9 @@ void GameState_save(char turn, const char* pBoard, Vec2 move)
 */
 static void printRecursive(GameState* pState, FILE* pFile)
 {
+	int x;
+	int y;
+
 	if (!pState) return;
 
 	printRecursive(pState->pLastState, pFile);
@@ -73,17 +78,14 @@ static void printRecursive(GameState* pState, FILE* pFile)
 	/* print column numbers */
 	fprintf(pFile, "  ");
 
-	int i;
-	for (i = 0; i < BOARD_WIDTH; i++)
+	for (x = 0; x < BOARD_WIDTH; x++)
 	{
-		fprintf(pFile, " %d", i);
+		fprintf(pFile, " %d", x);
 	}
 
 	fprintf(pFile, "\n");
 
 	/* print grid */
-	int x;
-	int y;
 	for (y = 0; y < BOARD_WIDTH; y++)
 	{
 		fprintf(pFile, " %d ", y);
@@ -100,9 +102,11 @@ static void printRecursive(GameState* pState, FILE* pFile)
 
 void GameState_printToFile(const char* fileName)
 {
+	FILE* pFile;
+
 	if (!fileName) return;
 
-	FILE* pFile = fopen(fileName, "w");
+	pFile = fopen(fileName, "w");
 
 	/* exit if could not open the file */
 	if (!pFile)

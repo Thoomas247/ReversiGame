@@ -105,12 +105,13 @@ static void clearInputBuffer()
 
 static Vec2 getPlayerMove()
 {
-	GameBoard_print(FALSE);
-
 	char undoChar;
 
 	Vec2 move;
 	BOOL validMove = FALSE;
+
+	GameBoard_print(FALSE);
+
 	do
 	{
 		/* get player input */

@@ -56,12 +56,12 @@ static void calculateCaptureStrength(ValidMove* pValidMove)
 {
 	const char opponentPiece = getOpponentPiece();
 
-	pValidMove->strength = 0;
-	pValidMove->directions = 0;
-
 	int currentStrength;
 	Vec2 adjacentCoord;
 	char currentPiece;
+
+	pValidMove->strength = 0;
+	pValidMove->directions = 0;
 
 	/* check every direction for opposing pieces */
 	int i;
@@ -93,9 +93,12 @@ static void calculateCaptureStrength(ValidMove* pValidMove)
 
 void GameBoard_create()
 {
-	/* clear board */
+	const int halfBoardWidth = BOARD_WIDTH / 2;
+
 	int x;
 	int y;
+
+	/* clear board */
 	for (x = 0; x < BOARD_WIDTH; x++)
 	{
 		for (y = 0; y < BOARD_WIDTH; y++)
@@ -105,7 +108,6 @@ void GameBoard_create()
 	}
 
 	/* add starting pieces */
-	const int halfBoardWidth = BOARD_WIDTH / 2;
 	s_Board[halfBoardWidth - 1][halfBoardWidth - 1] = WHITE_PIECE;
 	s_Board[halfBoardWidth][halfBoardWidth - 1] = BLACK_PIECE;
 	s_Board[halfBoardWidth - 1][halfBoardWidth] = BLACK_PIECE;
@@ -117,14 +119,15 @@ void GameBoard_create()
 
 int GameBoard_getPieceCount(char piece)
 {
-	/* no need to count if it is not a valid piece */
-	if (piece != WHITE_PIECE && piece != BLACK_PIECE)
-		return 0;
-
 	int count = 0;
 
 	int x;
 	int y;
+
+	/* no need to count if it is not a valid piece */
+	if (piece != WHITE_PIECE && piece != BLACK_PIECE)
+		return 0;
+
 	for (x = 0; x < BOARD_WIDTH; x++)
 	{
 		for (y = 0; y < BOARD_WIDTH; y++)
@@ -141,6 +144,9 @@ int GameBoard_getPieceCount(char piece)
 
 void GameBoard_print(BOOL showValidMoves)
 {
+	int x;
+	int y;
+
 	/* change valid positions to VALID_MARKER */
 	if (showValidMoves)
 	{
@@ -156,17 +162,14 @@ void GameBoard_print(BOOL showValidMoves)
 	/* print column numbers */
 	printf("  ");
 
-	int i;
-	for (i = 0; i < BOARD_WIDTH; i++)
+	for (x = 0; x < BOARD_WIDTH; x++)
 	{
-		printf(" %d", i);
+		printf(" %d", x);
 	}
 
 	printf("\n");
 
 	/* print grid */
-	int x;
-	int y;
 	for (y = 0; y < BOARD_WIDTH; y++)
 	{
 		printf(" %d ", y);
@@ -194,6 +197,11 @@ void GameBoard_calculateValidMoves()
 {
 	const char opponentPiece = getOpponentPiece();
 
+	Vec2 coord;
+	ValidMove validMove;
+
+	int i;
+
 	/* array to keep track of moves which have been calculated */
 	/* static so that it doesn't have to be reallocated every time */
 	static BOOL calculatedMoves[BOARD_WIDTH][BOARD_WIDTH];
@@ -203,10 +211,6 @@ void GameBoard_calculateValidMoves()
 
 	ValidMoveList_clear(&s_ValidMoves);
 
-	Vec2 coord;
-	ValidMove validMove;
-
-	int i;
 	for (coord.x = 0; coord.x < BOARD_WIDTH; coord.x++)
 	{
 		for (coord.y = 0; coord.y < BOARD_WIDTH; coord.y++)

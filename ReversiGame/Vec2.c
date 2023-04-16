@@ -2,7 +2,9 @@
 
 Vec2 Vec2_add(Vec2 a, Vec2 b)
 {
-	Vec2 vec = { a.x + b.x, a.y + b.y };
+	Vec2 vec;
+	vec.x = a.x + b.x;
+	vec.y = a.y + b.y;
 	return vec;
 }
 
