@@ -111,7 +111,7 @@ void GameState_printToFile(const char* fileName)
 	/* exit if could not open the file */
 	if (!pFile)
 	{
-		printf("Ocorreu um erro ao guardar o jogo!");
+		printf("Ocorreu um erro ao guardar o jogo!\n");
 		return;
 	}
 
@@ -127,10 +127,12 @@ void GameState_freeAll()
 
 void GameState_loadPrevious(char* pTurn, char* pBoard)
 {
-	GameState* pLastState = s_pCurrentGameState->pLastState;
+    GameState* pLastState;
 
 	if (!s_pCurrentGameState)
 		return;
+
+	pLastState = s_pCurrentGameState->pLastState;
 
 	/* if there is no last state, do not modify turn or board */
 	if (!pLastState)

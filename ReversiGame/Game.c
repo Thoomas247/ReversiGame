@@ -94,6 +94,7 @@ void Game_start(int argc, char* argv[])
 	/* save the game to a file if requested */
 	GameState_printToFile(GameOptions_getSaveFileName());
 
+    /* valid moves list is freed by last call to GameBoard_calculateValidMoves, so only free game states */
 	GameState_freeAll();
 }
 

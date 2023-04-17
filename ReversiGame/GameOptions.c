@@ -72,6 +72,9 @@ void GameOptions_print()
 
 const char* GameOptions_getSaveFileName()
 {
+	if (s_GameOptions.saveFileName[0] == '\0')
+		return NULL;
+
 	return s_GameOptions.saveFileName;
 }
 
